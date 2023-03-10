@@ -1,9 +1,0 @@
-/home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/Zelda_py_laserfollow/CMakeFiles/uninstall.dir
-/home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/Zelda_py_laserfollow/CMakeFiles/Zelda_py_laserfollow_uninstall.dir
-/home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/Zelda_py_laserfollow/CMakeFiles/test.dir
-/home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/Zelda_py_laserfollow/CMakeFiles/edit_cache.dir
-/home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/Zelda_py_laserfollow/CMakeFiles/rebuild_cache.dir
-/home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/Zelda_py_laserfollow/CMakeFiles/list_install_components.dir
-/home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/Zelda_py_laserfollow/CMakeFiles/install.dir
-/home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/Zelda_py_laserfollow/CMakeFiles/install/local.dir
-/home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/Zelda_py_laserfollow/CMakeFiles/install/strip.dir

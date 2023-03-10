@@ -1,4 +1,0 @@
-[console_scripts]
-reactor = wanderer.reactor:main
-wanderer = wanderer.wanderer:main
-

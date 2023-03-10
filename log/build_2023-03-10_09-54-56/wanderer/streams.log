@@ -1,9 +1,0 @@
-[1.582s] Invoking command in '/home/mghansen/dev/ros2_ws/RoboticsLaserFollow/ws/src/Zelda_laserfollow': PYTHONPATH=/home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/wanderer/prefix_override:/home/mghansen/dev/ros2_ws/RoboticsLaserFollow/install/wanderer/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../../build/wanderer build --build-base /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/wanderer/build install --record /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/wanderer/install.log --single-version-externally-managed
-[2.111s] running egg_info
-[2.112s] writing ../../../build/wanderer/wanderer.egg-info/PKG-INFO
-[2.113s] writing dependency_links to ../../../build/wanderer/wanderer.egg-info/dependency_links.txt
-[2.113s] writing entry points to ../../../build/wanderer/wanderer.egg-info/entry_points.txt
-[2.114s] writing requirements to ../../../build/wanderer/wanderer.egg-info/requires.txt
-[2.114s] writing top-level names to ../../../build/wanderer/wanderer.egg-info/top_level.txt
-[2.116s] error: package directory 'wanderer' does not exist
-[2.171s] Invoked command in '/home/mghansen/dev/ros2_ws/RoboticsLaserFollow/ws/src/Zelda_laserfollow' returned '1': PYTHONPATH=/home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/wanderer/prefix_override:/home/mghansen/dev/ros2_ws/RoboticsLaserFollow/install/wanderer/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../../build/wanderer build --build-base /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/wanderer/build install --record /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/wanderer/install.log --single-version-externally-managed
