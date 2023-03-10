@@ -1,0 +1,20 @@
+[0.043s] Invoking command in '/home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/Zelda_py_laserfollow': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/mghansen/dev/create3_examples_ws/install/create3_teleop:/home/mghansen/dev/create3_examples_ws/install/create3_examples_py:/opt/ros/humble /usr/bin/cmake --build /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/Zelda_py_laserfollow -- -j6 -l6
+[0.095s] Invoked command in '/home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/Zelda_py_laserfollow' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/mghansen/dev/create3_examples_ws/install/create3_teleop:/home/mghansen/dev/create3_examples_ws/install/create3_examples_py:/opt/ros/humble /usr/bin/cmake --build /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/Zelda_py_laserfollow -- -j6 -l6
+[0.147s] Invoking command in '/home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/Zelda_py_laserfollow': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/mghansen/dev/create3_examples_ws/install/create3_teleop:/home/mghansen/dev/create3_examples_ws/install/create3_examples_py:/opt/ros/humble /usr/bin/cmake --install /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/Zelda_py_laserfollow
+[0.159s] -- Install configuration: ""
+[0.159s] -- Up-to-date: /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/install/Zelda_py_laserfollow/share/ament_index/resource_index/package_run_dependencies/Zelda_py_laserfollow
+[0.160s] -- Up-to-date: /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/install/Zelda_py_laserfollow/share/ament_index/resource_index/parent_prefix_path/Zelda_py_laserfollow
+[0.160s] -- Up-to-date: /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/install/Zelda_py_laserfollow/share/Zelda_py_laserfollow/environment/ament_prefix_path.sh
+[0.160s] -- Up-to-date: /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/install/Zelda_py_laserfollow/share/Zelda_py_laserfollow/environment/ament_prefix_path.dsv
+[0.161s] -- Up-to-date: /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/install/Zelda_py_laserfollow/share/Zelda_py_laserfollow/environment/path.sh
+[0.161s] -- Up-to-date: /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/install/Zelda_py_laserfollow/share/Zelda_py_laserfollow/environment/path.dsv
+[0.161s] -- Up-to-date: /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/install/Zelda_py_laserfollow/share/Zelda_py_laserfollow/local_setup.bash
+[0.162s] -- Up-to-date: /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/install/Zelda_py_laserfollow/share/Zelda_py_laserfollow/local_setup.sh
+[0.162s] -- Up-to-date: /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/install/Zelda_py_laserfollow/share/Zelda_py_laserfollow/local_setup.zsh
+[0.162s] -- Up-to-date: /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/install/Zelda_py_laserfollow/share/Zelda_py_laserfollow/local_setup.dsv
+[0.163s] -- Up-to-date: /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/install/Zelda_py_laserfollow/share/Zelda_py_laserfollow/package.dsv
+[0.163s] -- Up-to-date: /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/install/Zelda_py_laserfollow/share/ament_index/resource_index/packages/Zelda_py_laserfollow
+[0.163s] -- Up-to-date: /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/install/Zelda_py_laserfollow/share/Zelda_py_laserfollow/cmake/Zelda_py_laserfollowConfig.cmake
+[0.164s] -- Up-to-date: /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/install/Zelda_py_laserfollow/share/Zelda_py_laserfollow/cmake/Zelda_py_laserfollowConfig-version.cmake
+[0.164s] -- Up-to-date: /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/install/Zelda_py_laserfollow/share/Zelda_py_laserfollow/package.xml
+[0.166s] Invoked command in '/home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/Zelda_py_laserfollow' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/mghansen/dev/create3_examples_ws/install/create3_teleop:/home/mghansen/dev/create3_examples_ws/install/create3_examples_py:/opt/ros/humble /usr/bin/cmake --install /home/mghansen/dev/ros2_ws/RoboticsLaserFollow/build/Zelda_py_laserfollow

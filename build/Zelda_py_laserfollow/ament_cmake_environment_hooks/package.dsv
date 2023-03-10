@@ -1,0 +1,4 @@
+source;share/Zelda_py_laserfollow/local_setup.bash
+source;share/Zelda_py_laserfollow/local_setup.dsv
+source;share/Zelda_py_laserfollow/local_setup.sh
+source;share/Zelda_py_laserfollow/local_setup.zsh
