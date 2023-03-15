@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'wanderer'
+package_name = 'zelda_py_laserfollow'
 
 setup(
     name=package_name,
@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'zelda_py_Laserfollow = wanderer.zelda_py_Laserfollow:main',
+            'zelda_py_laserfollow = zelda_py_laserfollow.zelda_py_laserfollow:main',
         ],
 
     },
