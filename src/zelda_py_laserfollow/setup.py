@@ -13,15 +13,14 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='talha',
-    maintainer_email='talhaMahmood2003@gmail.com',
+    maintainer='jinay',
+    maintainer_email='jinaybjain@gmail.com',
     description='TODO: Package description',
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'zelda_py_laserfollow = zelda_py_laserfollow.zelda_py_laserfollow:main',
+            'zelda_py_laserfollow = zelda_py_laserfollow.zelda_py_laserfollow:main'
         ],
-
     },
 )
