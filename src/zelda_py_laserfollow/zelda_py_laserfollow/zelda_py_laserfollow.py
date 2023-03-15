@@ -47,6 +47,10 @@ class LaserFollow(Node):
     def laser_callback(self, scan: LaserScan):
         print(f"Received laser: {scan.ranges}")
 
+        for i, dist in enumerate(scan.ranges):
+            if dist > scan.range_min and dist < scan.range_max:
+                print(f"Distance: {dist}")
+
         marker = Marker()
 
         marker.color.r = 1.0
