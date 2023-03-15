@@ -4,6 +4,7 @@ import rclpy
 from geometry_msgs.msg import Twist
 
 from irobot_create_msgs.msg import HazardDetectionVector, HazardDetection
+from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 from rclpy import qos
 
@@ -25,6 +26,13 @@ class Wanderer(Node):
             self.hazard_callback,
             qos.qos_profile_sensor_data)
         self.hazard_subscription  # prevent unused variable warning
+
+        self.laser_subscription = self.create_subscription(
+            LaserScan,
+            'zelda/scan',
+            self.laser_callback,
+            qos.qos_profile_sensor_data)
+        self.laser_subscription 
 
         self.publisher = self.create_publisher(Twist, 'zelda/cmd_vel', 10)
         self.move_timer = self.create_timer(
