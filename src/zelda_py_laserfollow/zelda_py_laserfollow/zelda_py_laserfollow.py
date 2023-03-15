@@ -14,10 +14,10 @@ TIMER_INTERVAL = 0.5
 BACKUP_TIME = 1.0
 
 
-class Wanderer(Node):
+class LaserFollow(Node):
 
     def __init__(self):
-        super().__init__('wanderer')
+        super().__init__('laserfollow')
 
         self.hazard_subscription = self.create_subscription(
             HazardDetectionVector,
@@ -91,14 +91,14 @@ class Wanderer(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    wanderer = Wanderer()
+    laser_follow = LaserFollow()
 
-    rclpy.spin(wanderer)
+    rclpy.spin(laser_follow)
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
     # when the garbage collector destroys the node object)
-    wanderer.destroy_node()
+    laser_follow.destroy_node()
     rclpy.shutdown()
 
 
