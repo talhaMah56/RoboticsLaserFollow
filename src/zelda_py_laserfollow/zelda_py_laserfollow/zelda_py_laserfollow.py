@@ -42,14 +42,19 @@ class LaserFollow(Node):
             qos.qos_profile_sensor_data)
 
     def hazard_callback(self, haz: HazardDetectionVector):
-        print(f"Received hazard: {haz}")
+        #print(f"Received hazard: {haz}")
+        pass
 
     def laser_callback(self, scan: LaserScan):
-        print(f"Received laser: {scan.ranges}")
+        #print(f"Received laser: {scan.ranges}")
 
         for i, dist in enumerate(scan.ranges):
+            
             if dist > scan.range_min and dist < scan.range_max:
-                print(f"Distance: {dist}")
+                x = dist * cos(i * scan.angle_increment)
+                y = dist * sin(i * scan.angle_increment)
+                print(f"x: {x}")
+                print(f"y: {y}")
 
         marker = Marker()
 
