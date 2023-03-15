@@ -5,10 +5,11 @@ from geometry_msgs.msg import Twist
 
 from irobot_create_msgs.msg import HazardDetectionVector, HazardDetection
 from sensor_msgs.msg import LaserScan
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist, Point
+from visualization_msgs.msg import Marker
 from rclpy import qos
 
-from math import radians
+from math import cos, sin, pi
 from random import uniform
 
 TIMER_INTERVAL = 0.5
@@ -35,11 +36,47 @@ class LaserFollow(Node):
 
         self.laser_subscription  # prevent unused variable warning
 
+        self.marker_publisher = self.create_publisher(
+            Marker,
+            'zelda/marker',
+            qos.qos_profile_sensor_data)
+
     def hazard_callback(self, haz: HazardDetectionVector):
         print(f"Received hazard: {haz}")
 
     def laser_callback(self, scan: LaserScan):
-        print(f"Received laser: {scan}")
+        print(f"Received laser: {scan.ranges}")
+
+        marker = Marker()
+
+        marker.color.r = 1.0
+        marker.color.g = 0.0
+        marker.color.b = 0.0
+        marker.color.a = 1.0
+
+        marker.header.frame_id = "base_link"
+        marker.header.stamp = self.get_clock().now().to_msg()
+
+        marker.ns = "laser"
+        marker.id = 0
+
+        marker.type = Marker.SPHERE
+        marker.action = Marker.ADD
+
+        marker.pose.position.x = 0.0
+        marker.pose.position.y = 0.0
+        marker.pose.position.z = 0.0
+
+        marker.pose.orientation.x = 0.0
+        marker.pose.orientation.y = 0.0
+        marker.pose.orientation.z = 0.0
+        marker.pose.orientation.w = 1.0
+
+        marker.scale.x = 0.1
+        marker.scale.y = 0.1
+        marker.scale.z = 0.1
+
+        self.marker_publisher.publish(marker)
 
 
 def main(args=None):
