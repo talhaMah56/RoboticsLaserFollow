@@ -4,13 +4,14 @@ import rclpy
 from geometry_msgs.msg import Twist
 
 from irobot_create_msgs.msg import HazardDetectionVector, HazardDetection
+from std_msgs.msg import ColorRGBA
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist, Point
 from visualization_msgs.msg import Marker
 from rclpy import qos
 
-from math import cos, sin, pi
-from random import uniform
+from math import cos, sin
+from sklearn import linear_model
 
 TIMER_INTERVAL = 0.5
 BACKUP_TIME = 1.0
@@ -42,48 +43,51 @@ class LaserFollow(Node):
             qos.qos_profile_sensor_data)
 
     def hazard_callback(self, haz: HazardDetectionVector):
-        #print(f"Received hazard: {haz}")
+        # print(f"Received hazard: {haz}")
         pass
 
     def laser_callback(self, scan: LaserScan):
-        #print(f"Received laser: {scan.ranges}")
+        # print(f"Received laser: {scan.ranges}")
+
+        points = []
 
         for i, dist in enumerate(scan.ranges):
-            
+
             if dist > scan.range_min and dist < scan.range_max:
                 x = dist * cos(i * scan.angle_increment)
                 y = dist * sin(i * scan.angle_increment)
-                print(f"x: {x}")
-                print(f"y: {y}")
+                points.append((x, y))
+
+                # print(f"x: {x}")
+                # print(f"y: {y}")
+
+        self.show_points(points)
+
+        model = linear_model.RANSACRegressor()
+        X = [[x] for x, _ in points]
+        Y = [y for _, y in points]
+
+        model.fit(X, Y)
+
+    def show_points(self, points):
+        points = points[::3]  # only show every few points
 
         marker = Marker()
 
-        marker.color.r = 1.0
-        marker.color.g = 0.0
-        marker.color.b = 0.0
-        marker.color.a = 1.0
+        marker.id = 0
+        marker.type = Marker.POINTS
+        marker.action = Marker.ADD
+
+        marker.color = ColorRGBA(r=0.0, g=1.0, b=0.0, a=1.0)
+
+        point_scale = 0.01
+        marker.scale.x = point_scale
+        marker.scale.y = point_scale
 
         marker.header.frame_id = "base_link"
         marker.header.stamp = self.get_clock().now().to_msg()
 
-        marker.ns = "laser"
-        marker.id = 0
-
-        marker.type = Marker.SPHERE
-        marker.action = Marker.ADD
-
-        marker.pose.position.x = 0.0
-        marker.pose.position.y = 0.0
-        marker.pose.position.z = 0.0
-
-        marker.pose.orientation.x = 0.0
-        marker.pose.orientation.y = 0.0
-        marker.pose.orientation.z = 0.0
-        marker.pose.orientation.w = 1.0
-
-        marker.scale.x = 0.1
-        marker.scale.y = 0.1
-        marker.scale.z = 0.1
+        marker.points = [Point(x=x, y=y, z=0.0) for x, y in points]
 
         self.marker_publisher.publish(marker)
 
