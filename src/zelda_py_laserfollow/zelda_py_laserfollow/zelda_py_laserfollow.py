@@ -13,8 +13,7 @@ from rclpy import qos
 from math import cos, sin, pi
 from random import uniform
 
-TIMER_INTERVAL = 0.5
-BACKUP_TIME = 1.0
+FORWARD_STOP_RANGE = 0.5
 
 
 class LaserFollow(Node):
@@ -43,26 +42,26 @@ class LaserFollow(Node):
             qos.qos_profile_sensor_data)
 
     def hazard_callback(self, haz: HazardDetectionVector):
-        #print(f"Received hazard: {haz}")
+        # print(f"Received hazard: {haz}")
         pass
 
-    def filter_points(self, scan: LaserScan, angle_ranges):
+    def filter_points(self, scan: LaserScan, angle_ranges, range_max=float('inf')):
         polar_points = []
         for i, dist in enumerate(scan.ranges):
             angle = i * scan.angle_increment
 
             for r in angle_ranges:
-                if angle > r[0] and angle < r[1] and dist < 5.0:
+                if angle > r[0] and angle < r[1] and dist > scan.range_min and dist < scan.range_max and dist < range_max:
                     polar_points.append((dist, angle))
                     break
 
         return polar_points
 
     def laser_callback(self, scan: LaserScan):
-        #print(f"Received laser: {scan.ranges}")
+        # print(f"Received laser: {scan.ranges}")
 
         front_points = self.filter_points(
-            scan, [(0, pi / 4), (7 * pi / 4, 2 * pi)])
+            scan, [(0, pi / 4), (7 * pi / 4, 2 * pi)], FORWARD_STOP_RANGE)
         left_points = self.filter_points(scan, [(pi / 4, 3 * pi / 4)])
         right_points = self.filter_points(scan, [(5 * pi / 4, 7 * pi / 4)])
 
