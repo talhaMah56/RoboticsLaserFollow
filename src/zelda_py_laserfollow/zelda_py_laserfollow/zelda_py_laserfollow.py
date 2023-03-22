@@ -7,6 +7,7 @@ from irobot_create_msgs.msg import HazardDetectionVector, HazardDetection
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist, Point
 from visualization_msgs.msg import Marker
+from std_msgs.msg import ColorRGBA
 from rclpy import qos
 
 from math import cos, sin, pi
@@ -45,45 +46,60 @@ class LaserFollow(Node):
         #print(f"Received hazard: {haz}")
         pass
 
+    def filter_points(self, scan: LaserScan, angle_ranges):
+        polar_points = []
+        for i, dist in enumerate(scan.ranges):
+            angle = i * scan.angle_increment
+
+            for r in angle_ranges:
+                if angle > r[0] and angle < r[1] and dist < 5.0:
+                    polar_points.append((dist, angle))
+                    break
+
+        return polar_points
+
     def laser_callback(self, scan: LaserScan):
         #print(f"Received laser: {scan.ranges}")
 
-        for i, dist in enumerate(scan.ranges):
-            
-            if dist > scan.range_min and dist < scan.range_max:
-                x = dist * cos(i * scan.angle_increment)
-                y = dist * sin(i * scan.angle_increment)
-                print(f"x: {x}")
-                print(f"y: {y}")
+        front_points = self.filter_points(
+            scan, [(0, pi / 4), (7 * pi / 4, 2 * pi)])
+        left_points = self.filter_points(scan, [(pi / 4, 3 * pi / 4)])
+        right_points = self.filter_points(scan, [(5 * pi / 4, 7 * pi / 4)])
+
+        self.get_logger().info(
+            f"front: {len(front_points)}, left: {len(left_points)}, right: {len(right_points)}")
+
+        front_points = self.to_cartesian(front_points)
+        left_points = self.to_cartesian(left_points)
+        right_points = self.to_cartesian(right_points)
+
+        self.show_points(front_points, 0, ColorRGBA(
+            r=1.0, g=0.0, b=0.0, a=1.0))
+        self.show_points(left_points, 1, ColorRGBA(r=0.0, g=1.0, b=0.0, a=1.0))
+        self.show_points(right_points, 2, ColorRGBA(
+            r=1.0, g=0.0, b=1.0, a=1.0))
+
+    def to_cartesian(self, polar_points):
+        return [(r * cos(a), r * sin(a)) for r, a in polar_points]
+
+    def show_points(self, points, id=0, color=ColorRGBA(r=0.0, g=1.0, b=0.0, a=1.0)):
+        points = points  # only show every few points
 
         marker = Marker()
+        marker.id = id
+        marker.type = Marker.POINTS
+        marker.action = Marker.ADD
 
-        marker.color.r = 1.0
-        marker.color.g = 0.0
-        marker.color.b = 0.0
-        marker.color.a = 1.0
+        marker.color = color
+
+        point_scale = 0.01
+        marker.scale.x = point_scale
+        marker.scale.y = point_scale
 
         marker.header.frame_id = "base_link"
         marker.header.stamp = self.get_clock().now().to_msg()
 
-        marker.ns = "laser"
-        marker.id = 0
-
-        marker.type = Marker.SPHERE
-        marker.action = Marker.ADD
-
-        marker.pose.position.x = 0.0
-        marker.pose.position.y = 0.0
-        marker.pose.position.z = 0.0
-
-        marker.pose.orientation.x = 0.0
-        marker.pose.orientation.y = 0.0
-        marker.pose.orientation.z = 0.0
-        marker.pose.orientation.w = 1.0
-
-        marker.scale.x = 0.1
-        marker.scale.y = 0.1
-        marker.scale.z = 0.1
+        marker.points = [Point(x=x, y=y, z=0.0) for x, y in points]
 
         self.marker_publisher.publish(marker)
 
