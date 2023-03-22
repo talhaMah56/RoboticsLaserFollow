@@ -13,9 +13,11 @@ from rclpy import qos
 from math import cos, sin, pi, degrees
 from random import uniform
 
-FORWARD_STOP_RANGE = 0.5
-TIMER_INTERVAL = 0.5
+FORWARD_STOP_RANGE = 0.3
+WALL_FOLLOW_DIST = 0.3
+TIMER_INTERVAL = 0.1
 BACKUP_TIMER = 1.0
+SLIGHT_TURN = 0.4
 
 
 class LaserFollow(Node):
@@ -58,10 +60,20 @@ class LaserFollow(Node):
 
         if self.move_state == "forward":
             twist.linear.x = 0.1  # m/s
-        elif self.move_state == "spin":
+        elif self.move_state == "follow":
+            twist.linear.x = 0.1  # m/s
+            twist.angular.z = self.slight_turn
+        elif self.move_state == "align":
             twist.angular.z = 1.0  # rad/s
-        else:  # backward
+        elif self.move_state == "turn_left":
+            twist.angular.z = 1.0  # rad/s
+        elif self.move_state == "turn_right":
+            twist.angular.z = -1.0  # rad/s
+        elif self.move_state == "backward":  # backward
             twist.linear.x = -0.01  # m/s
+        else:
+            self.get_logger().info("stopping")
+            twist.linear.x = 0.0
 
         self.move_publisher.publish(twist)
 
@@ -80,8 +92,9 @@ class LaserFollow(Node):
     #     )
 
     def hazard_callback(self, haz: HazardDetectionVector):
-        # print(f"Received hazard: {haz}")
-        pass
+        for hazard in haz.detections:
+            if hazard.type == HazardDetection.BUMP:
+                self.move_state = "stop"
 
     def filter_points(self, scan: LaserScan, angle_ranges, range_max=float('inf')):
         polar_points = []
@@ -103,11 +116,30 @@ class LaserFollow(Node):
         left_points = self.filter_points(scan, [(pi / 4, 3 * pi / 4)])
         right_points = self.filter_points(scan, [(5 * pi / 4, 7 * pi / 4)])
 
-        if len(front_points) > 0:
-            self.move_state = "TEST"
+        min_right_dist = min(
+            [dist for dist, angle in right_points], default=scan.range_max)
 
-        self.get_logger().info(
-            f"front: {len(front_points)}, left: {len(left_points)}, right: {len(right_points)}")
+        if self.move_state == "forward":
+            if len(front_points) > 0:
+                self.move_state = "align"
+                self.get_logger().info("aligning")
+        elif self.move_state == "align":
+            if len(front_points) == 0:
+                self.move_state = "follow"
+                self.get_logger().info("following")
+        elif self.move_state == "follow":
+            if min_right_dist < WALL_FOLLOW_DIST:
+                self.slight_turn = SLIGHT_TURN
+            else:
+                self.slight_turn = -SLIGHT_TURN
+
+            if len(front_points) > 0:
+                self.move_state = "turn_left"
+                self.get_logger().info("turning left")
+        elif self.move_state == "turn_left":
+            if len(front_points) == 0:
+                self.move_state = "follow"
+                self.get_logger().info("following again")
 
         front_points = self.to_cartesian(front_points)
         left_points = self.to_cartesian(left_points)
