@@ -13,11 +13,14 @@ from rclpy import qos
 from math import cos, sin, pi, degrees
 from random import uniform
 
+# TODO: These parameters follow the wall tightly, and have a wavy motion.
+# We should try and test out a stop_range of 0.5 and wall_follow_dist of 0.4
 FORWARD_STOP_RANGE = 0.3
-WALL_FOLLOW_DIST = 0.3
+WALL_FOLLOW_DIST = 0.2
 TIMER_INTERVAL = 0.1
 BACKUP_TIMER = 1.0
-SLIGHT_TURN = 0.4
+SLIGHT_TURN_POWER = 10.0
+SLIGHT_TURN_MAX = 0.5
 
 
 class LaserFollow(Node):
@@ -46,6 +49,7 @@ class LaserFollow(Node):
             qos.qos_profile_sensor_data)
 
         self.move_state = "forward"
+        self.slight_turn = 0.0
 
         self.move_publisher = self.create_publisher(Twist, 'zelda/cmd_vel', 10)
         self.move_timer = self.create_timer(
@@ -128,10 +132,13 @@ class LaserFollow(Node):
                 self.move_state = "follow"
                 self.get_logger().info("following")
         elif self.move_state == "follow":
-            if min_right_dist < WALL_FOLLOW_DIST:
-                self.slight_turn = SLIGHT_TURN
-            else:
-                self.slight_turn = -SLIGHT_TURN
+            difference = WALL_FOLLOW_DIST - min_right_dist
+            self.slight_turn = min(
+                max(difference * SLIGHT_TURN_POWER, -SLIGHT_TURN_MAX), SLIGHT_TURN_MAX)
+
+            self.get_logger().info(
+                f"slight turn: {self.slight_turn}, difference: {difference}"
+            )
 
             if len(front_points) > 0:
                 self.move_state = "turn_left"
