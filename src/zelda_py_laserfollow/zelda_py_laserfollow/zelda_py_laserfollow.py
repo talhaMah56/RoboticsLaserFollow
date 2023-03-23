@@ -15,12 +15,13 @@ from random import uniform
 
 # TODO: These parameters follow the wall tightly, and have a wavy motion.
 # We should try and test out a stop_range of 0.5 and wall_follow_dist of 0.4
-FORWARD_STOP_RANGE = 0.3
-WALL_FOLLOW_DIST = 0.2
+FORWARD_STOP_RANGE = 0.25
+WALL_FOLLOW_DIST = 0.3
 TIMER_INTERVAL = 0.1
 BACKUP_TIMER = 1.0
 SLIGHT_TURN_POWER = 10.0
-SLIGHT_TURN_MAX = 0.5
+SLIGHT_TURN_MAX = 0.8
+MOVE_SPEED_MS = 0.05
 
 
 class LaserFollow(Node):
@@ -63,9 +64,9 @@ class LaserFollow(Node):
         self.get_logger().info(f"moving {self.move_state}")
 
         if self.move_state == "forward":
-            twist.linear.x = 0.1  # m/s
+            twist.linear.x = MOVE_SPEED_MS
         elif self.move_state == "follow":
-            twist.linear.x = 0.1  # m/s
+            twist.linear.x = MOVE_SPEED_MS
             twist.angular.z = self.slight_turn
         elif self.move_state == "align":
             twist.angular.z = 1.0  # rad/s
@@ -118,7 +119,8 @@ class LaserFollow(Node):
         front_points = self.filter_points(
             scan, [(0, pi / 4), (7 * pi / 4, 2 * pi)], FORWARD_STOP_RANGE)
         left_points = self.filter_points(scan, [(pi / 4, 3 * pi / 4)])
-        right_points = self.filter_points(scan, [(5 * pi / 4, 7 * pi / 4)])
+        # right_points = self.filter_points(scan, [(5 * pi / 4, 7 * pi / 4)])
+        right_points = self.filter_points(scan, [(6 * pi / 4, 7 * pi / 4)])
 
         min_right_dist = min(
             [dist for dist, angle in right_points], default=scan.range_max)
