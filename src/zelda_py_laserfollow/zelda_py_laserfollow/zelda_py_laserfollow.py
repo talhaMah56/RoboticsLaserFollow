@@ -160,6 +160,8 @@ class LaserFollow(Node):
             r=1.0, g=0.0, b=0.0, a=1.0))
         self.show_points(selection_points, 1, ColorRGBA(
             r=0.0, g=1.0, b=0.0, a=1.0))
+        self.show_state()
+        self.show_slight_turn()
 
     def to_cartesian(self, polar_points):
         return [(r * cos(a), r * sin(a)) for r, a in polar_points]
@@ -182,6 +184,67 @@ class LaserFollow(Node):
         marker.header.stamp = self.get_clock().now().to_msg()
 
         marker.points = [Point(x=x, y=y, z=0.0) for x, y in points]
+
+        self.marker_publisher.publish(marker)
+
+    def show_state(self):
+        marker = Marker()
+
+        state_colors = {
+            "forward": ColorRGBA(r=0.0, g=1.0, b=0.0, a=1.0),
+            "align": ColorRGBA(r=1.0, g=1.0, b=0.0, a=1.0),
+            "follow": ColorRGBA(r=1.0, g=0.0, b=0.0, a=1.0),
+            "turn_left": ColorRGBA(r=0.0, g=0.0, b=1.0, a=1.0),
+            "turn_right": ColorRGBA(r=0.0, g=0.0, b=1.0, a=1.0),
+            "stop": ColorRGBA(r=1.0, g=0.0, b=1.0, a=1.0),
+        }
+
+        marker.color = state_colors[self.move_state]
+
+        marker.header.frame_id = "base_link"
+        marker.header.stamp = self.get_clock().now().to_msg()
+
+        marker.id = 3
+
+        marker.type = Marker.SPHERE
+        marker.action = Marker.ADD
+
+        marker.pose.position.x = 0.0
+        marker.pose.position.y = 0.0
+        marker.pose.position.z = 0.3
+
+        marker.pose.orientation.x = 0.0
+        marker.pose.orientation.y = 0.0
+        marker.pose.orientation.z = 0.0
+        marker.pose.orientation.w = 1.0
+
+        marker.scale.x = 0.1
+        marker.scale.y = 0.1
+        marker.scale.z = 0.1
+
+        self.marker_publisher.publish(marker)
+
+    def show_slight_turn(self):
+        marker = Marker()
+
+        marker.color = ColorRGBA(r=1.0, g=0.0, b=0.0, a=1.0)
+
+        marker.header.frame_id = "base_link"
+        marker.header.stamp = self.get_clock().now().to_msg()
+
+        marker.id = 4
+
+        marker.type = Marker.ARROW
+        marker.action = Marker.ADD
+
+        marker.points = [
+            Point(x=0.0, y=0.0, z=0.3),
+            Point(x=0.0, y=self.slight_turn, z=0.3),
+        ]
+
+        marker.scale.x = 0.01
+        marker.scale.y = 0.02
+        marker.scale.z = 0.02
 
         self.marker_publisher.publish(marker)
 
