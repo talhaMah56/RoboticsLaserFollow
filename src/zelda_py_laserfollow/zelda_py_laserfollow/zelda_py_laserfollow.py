@@ -19,9 +19,10 @@ FORWARD_STOP_RANGE = 0.25
 WALL_FOLLOW_DIST = 0.3
 TIMER_INTERVAL = 0.1
 BACKUP_TIMER = 1.0
-SLIGHT_TURN_POWER = 10.0
+SLIGHT_TURN_POWER = 7.0
 SLIGHT_TURN_MAX = 0.8
 MOVE_SPEED_MS = 0.05
+FOLLOW_SIDE = "left"
 
 
 class LaserFollow(Node):
@@ -51,6 +52,7 @@ class LaserFollow(Node):
 
         self.move_state = "forward"
         self.slight_turn = 0.0
+        self.sign = 1 if FOLLOW_SIDE == "right" else -1
 
         self.move_publisher = self.create_publisher(Twist, 'zelda/cmd_vel', 10)
         self.move_timer = self.create_timer(
@@ -69,7 +71,7 @@ class LaserFollow(Node):
             twist.linear.x = MOVE_SPEED_MS
             twist.angular.z = self.slight_turn
         elif self.move_state == "align":
-            twist.angular.z = 1.0  # rad/s
+            twist.angular.z = self.sign * 1.0  # rad/s
         elif self.move_state == "turn_left":
             twist.angular.z = 1.0  # rad/s
         elif self.move_state == "turn_right":
@@ -118,12 +120,13 @@ class LaserFollow(Node):
 
         front_points = self.filter_points(
             scan, [(0, pi / 4), (7 * pi / 4, 2 * pi)], FORWARD_STOP_RANGE)
-        left_points = self.filter_points(scan, [(pi / 4, 3 * pi / 4)])
+        left_points = self.filter_points(scan, [(pi / 4, pi / 2)])
         # right_points = self.filter_points(scan, [(5 * pi / 4, 7 * pi / 4)])
-        right_points = self.filter_points(scan, [(6 * pi / 4, 7 * pi / 4)])
+        right_points = self.filter_points(scan, [(3 * pi / 2, 7 * pi / 4)])
 
-        min_right_dist = min(
-            [dist for dist, angle in right_points], default=scan.range_max)
+        selection_points = right_points if FOLLOW_SIDE == "right" else left_points
+        min_dist = min(
+            [dist for dist, angle in selection_points], default=scan.range_max)
 
         if self.move_state == "forward":
             if len(front_points) > 0:
@@ -134,7 +137,7 @@ class LaserFollow(Node):
                 self.move_state = "follow"
                 self.get_logger().info("following")
         elif self.move_state == "follow":
-            difference = WALL_FOLLOW_DIST - min_right_dist
+            difference = self.sign * (WALL_FOLLOW_DIST - min_dist)
             self.slight_turn = min(
                 max(difference * SLIGHT_TURN_POWER, -SLIGHT_TURN_MAX), SLIGHT_TURN_MAX)
 
@@ -143,22 +146,20 @@ class LaserFollow(Node):
             )
 
             if len(front_points) > 0:
-                self.move_state = "turn_left"
-                self.get_logger().info("turning left")
-        elif self.move_state == "turn_left":
+                self.move_state = "turn_left" if FOLLOW_SIDE == "right" else "turn_right"
+                self.get_logger().info("turning")
+        elif self.move_state == "turn_left" or self.move_state == "turn_right":
             if len(front_points) == 0:
                 self.move_state = "follow"
                 self.get_logger().info("following again")
 
         front_points = self.to_cartesian(front_points)
-        left_points = self.to_cartesian(left_points)
-        right_points = self.to_cartesian(right_points)
+        selection_points = self.to_cartesian(selection_points)
 
         self.show_points(front_points, 0, ColorRGBA(
             r=1.0, g=0.0, b=0.0, a=1.0))
-        self.show_points(left_points, 1, ColorRGBA(r=0.0, g=1.0, b=0.0, a=1.0))
-        self.show_points(right_points, 2, ColorRGBA(
-            r=1.0, g=0.0, b=1.0, a=1.0))
+        self.show_points(selection_points, 1, ColorRGBA(
+            r=0.0, g=1.0, b=0.0, a=1.0))
 
     def to_cartesian(self, polar_points):
         return [(r * cos(a), r * sin(a)) for r, a in polar_points]
