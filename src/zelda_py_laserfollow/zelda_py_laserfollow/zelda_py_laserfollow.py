@@ -193,10 +193,10 @@ class LaserFollow(Node):
         state_colors = {
             "forward": ColorRGBA(r=0.0, g=1.0, b=0.0, a=1.0),
             "align": ColorRGBA(r=1.0, g=1.0, b=0.0, a=1.0),
-            "follow": ColorRGBA(r=1.0, g=0.0, b=0.0, a=1.0),
+            "follow": ColorRGBA(r=0.0, g=1.0, b=0.0, a=1.0),
             "turn_left": ColorRGBA(r=0.0, g=0.0, b=1.0, a=1.0),
             "turn_right": ColorRGBA(r=0.0, g=0.0, b=1.0, a=1.0),
-            "stop": ColorRGBA(r=1.0, g=0.0, b=1.0, a=1.0),
+            "stop": ColorRGBA(r=1.0, g=0.0, b=0.0, a=1.0),
         }
 
         marker.color = state_colors[self.move_state]
