@@ -23,6 +23,7 @@ SLIGHT_TURN_POWER = 7.0
 SLIGHT_TURN_MAX = 0.8
 MOVE_SPEED_MS = 0.05
 FOLLOW_SIDE = "left"
+BACKUP_TIME = 1.0
 
 
 class LaserFollow(Node):
@@ -50,6 +51,8 @@ class LaserFollow(Node):
             'zelda/marker',
             qos.qos_profile_sensor_data)
 
+        self.backup_timer = None
+        self.spin_timer = None
         self.move_state = "forward"
         self.slight_turn = 0.0
         self.sign = 1 if FOLLOW_SIDE == "right" else -1
@@ -84,24 +87,37 @@ class LaserFollow(Node):
 
         self.move_publisher.publish(twist)
 
-    # def backup_timer_callback(self):
-    #     self.move_state = "spin"
-    #     self.backup_timer.destroy()
+    def backup_timer_callback(self):
+        self.move_state = "align"
+        self.backup_timer.destroy()
 
-    #     #min_spin_time = radians(120)
-    #     #max_spin_time = radians(240)
+        #min_spin_time = radians(120)
+        #max_spin_time = radians(240)
 
-    #     #spin_time = uniform(min_spin_time, max_spin_time)
+        #spin_time = uniform(min_spin_time, max_spin_time)
 
-    #     self.spin_timer = self.create_timer(
-    #         spin_time,
-    #         self.spin_timer_callback
-    #     )
+        self.spin_timer = self.create_timer(
+            0.5,
+            self.spin_timer_callback
+        )
+
+    def spin_timer_callback(self):
+        self.move_state = "follow"
+        self.spin_timer.destroy()
 
     def hazard_callback(self, haz: HazardDetectionVector):
         for hazard in haz.detections:
             if hazard.type == HazardDetection.BUMP:
                 self.move_state = "stop"
+
+                # stop the robot
+                twist = Twist()
+                self.move_publisher.publish(twist)
+
+                # start backing up
+                self.move_state = "backward"
+                self.backup_timer = self.create_timer(
+                    BACKUP_TIME, self.backup_timer_callback)
 
     def filter_points(self, scan: LaserScan, angle_ranges, range_max=float('inf')):
         polar_points = []
