@@ -23,6 +23,7 @@ SLIGHT_TURN_POWER = 7.0
 SLIGHT_TURN_MAX = 0.8
 MOVE_SPEED_MS = 0.05
 FOLLOW_SIDE = "left"
+BACKUP_TIME = 1.0
 
 
 class LaserFollow(Node):
@@ -50,6 +51,8 @@ class LaserFollow(Node):
             'zelda/marker',
             qos.qos_profile_sensor_data)
 
+        self.backup_timer = None
+        self.spin_timer = None
         self.move_state = "forward"
         self.slight_turn = 0.0
         self.sign = 1 if FOLLOW_SIDE == "right" else -1
@@ -84,24 +87,39 @@ class LaserFollow(Node):
 
         self.move_publisher.publish(twist)
 
-    # def backup_timer_callback(self):
-    #     self.move_state = "spin"
-    #     self.backup_timer.destroy()
+    def backup_timer_callback(self):
+        self.move_state = "align"
+        self.backup_timer.destroy()
 
-    #     #min_spin_time = radians(120)
-    #     #max_spin_time = radians(240)
+        #min_spin_time = radians(120)
+        #max_spin_time = radians(240)
 
-    #     #spin_time = uniform(min_spin_time, max_spin_time)
+        #spin_time = uniform(min_spin_time, max_spin_time)
 
-    #     self.spin_timer = self.create_timer(
-    #         spin_time,
-    #         self.spin_timer_callback
-    #     )
+        self.spin_timer = self.create_timer(
+            0.5,
+            self.spin_timer_callback
+        )
+
+    
+
+    def spin_timer_callback(self):
+        self.move_state = "follow"
+        self.spin_timer.destroy()
 
     def hazard_callback(self, haz: HazardDetectionVector):
         for hazard in haz.detections:
             if hazard.type == HazardDetection.BUMP:
                 self.move_state = "stop"
+
+                # stop the robot
+                twist = Twist()
+                self.move_publisher.publish(twist)
+
+                # start backing up
+                self.move_state = "backward"
+                self.backup_timer = self.create_timer(
+                    BACKUP_TIME, self.backup_timer_callback)
 
     def filter_points(self, scan: LaserScan, angle_ranges, range_max=float('inf')):
         polar_points = []
@@ -160,8 +178,6 @@ class LaserFollow(Node):
             r=1.0, g=0.0, b=0.0, a=1.0))
         self.show_points(selection_points, 1, ColorRGBA(
             r=0.0, g=1.0, b=0.0, a=1.0))
-        self.show_state()
-        self.show_slight_turn()
 
     def to_cartesian(self, polar_points):
         return [(r * cos(a), r * sin(a)) for r, a in polar_points]
@@ -184,67 +200,6 @@ class LaserFollow(Node):
         marker.header.stamp = self.get_clock().now().to_msg()
 
         marker.points = [Point(x=x, y=y, z=0.0) for x, y in points]
-
-        self.marker_publisher.publish(marker)
-
-    def show_state(self):
-        marker = Marker()
-
-        state_colors = {
-            "forward": ColorRGBA(r=0.0, g=1.0, b=0.0, a=1.0),
-            "align": ColorRGBA(r=1.0, g=1.0, b=0.0, a=1.0),
-            "follow": ColorRGBA(r=0.0, g=1.0, b=0.0, a=1.0),
-            "turn_left": ColorRGBA(r=0.0, g=0.0, b=1.0, a=1.0),
-            "turn_right": ColorRGBA(r=0.0, g=0.0, b=1.0, a=1.0),
-            "stop": ColorRGBA(r=1.0, g=0.0, b=0.0, a=1.0),
-        }
-
-        marker.color = state_colors[self.move_state]
-
-        marker.header.frame_id = "base_link"
-        marker.header.stamp = self.get_clock().now().to_msg()
-
-        marker.id = 3
-
-        marker.type = Marker.SPHERE
-        marker.action = Marker.ADD
-
-        marker.pose.position.x = 0.0
-        marker.pose.position.y = 0.0
-        marker.pose.position.z = 0.3
-
-        marker.pose.orientation.x = 0.0
-        marker.pose.orientation.y = 0.0
-        marker.pose.orientation.z = 0.0
-        marker.pose.orientation.w = 1.0
-
-        marker.scale.x = 0.1
-        marker.scale.y = 0.1
-        marker.scale.z = 0.1
-
-        self.marker_publisher.publish(marker)
-
-    def show_slight_turn(self):
-        marker = Marker()
-
-        marker.color = ColorRGBA(r=1.0, g=0.0, b=0.0, a=1.0)
-
-        marker.header.frame_id = "base_link"
-        marker.header.stamp = self.get_clock().now().to_msg()
-
-        marker.id = 4
-
-        marker.type = Marker.ARROW
-        marker.action = Marker.ADD
-
-        marker.points = [
-            Point(x=0.0, y=0.0, z=0.3),
-            Point(x=0.0, y=self.slight_turn, z=0.3),
-        ]
-
-        marker.scale.x = 0.01
-        marker.scale.y = 0.02
-        marker.scale.z = 0.02
 
         self.marker_publisher.publish(marker)
 
