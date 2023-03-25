@@ -24,6 +24,8 @@ SLIGHT_TURN_MAX = 0.8
 MOVE_SPEED_MS = 0.05
 FOLLOW_SIDE = "left"
 BACKUP_TIME = 1.0
+SPIN_TIMER = 0.5
+
 
 
 class LaserFollow(Node):
@@ -91,13 +93,8 @@ class LaserFollow(Node):
         self.move_state = "align"
         self.backup_timer.destroy()
 
-        #min_spin_time = radians(120)
-        #max_spin_time = radians(240)
-
-        #spin_time = uniform(min_spin_time, max_spin_time)
-
         self.spin_timer = self.create_timer(
-            0.5,
+            SPIN_TIMER,
             self.spin_timer_callback
         )
 
